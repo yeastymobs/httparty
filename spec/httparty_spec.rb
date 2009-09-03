@@ -51,6 +51,12 @@ describe HTTParty do
   end
   
   describe "headers" do
+    def expect_headers(s)
+      HTTParty::Request.should_receive(:new) \
+        .with(anything, anything, hash_including({ :headers => {"cookie" => ""}.merge(s)  })) \
+        .and_return(mock("mock response", :perform => nil))
+    end
+    
     it "should default to empty hash" do
       @klass.headers.should == {}
     end
@@ -59,6 +65,14 @@ describe HTTParty do
       init_headers = {:foo => 'bar', :baz => 'spax'}
       @klass.headers init_headers
       @klass.headers.should == init_headers
+    end
+    
+    it "should keep default headers" do
+      init_headers = {:foo => 'bar', :baz => 'spax'}
+      @klass.headers init_headers
+      @klass.headers.should == init_headers
+      expect_headers(init_headers)
+      @klass.get("")
     end
   end
 

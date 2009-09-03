@@ -156,6 +156,7 @@ module HTTParty
     private
       def perform_request(http_method, path, options) #:nodoc:
         process_cookies(options)
+        process_headers(options)
         Request.new(http_method, path, default_options.dup.merge(options)).perform
       end
 
@@ -165,6 +166,11 @@ module HTTParty
         options[:headers]["cookie"] = cookies.merge(options[:cookies] || {}).to_cookie_string
 
         options.delete(:cookies)
+      end
+      
+      def process_headers(options) #:nodoc:
+        options[:headers] ||= {}
+        options[:headers].merge!(default_options[:headers]||{})
       end
   end
 
